@@ -1,0 +1,94 @@
+{
+  "realm": "clinic",
+  "enabled": true,
+  "sslRequired": "none",
+  "registrationAllowed": false,
+  "roles": {
+    "realm": [
+      { "name": "ADMIN", "description": "Адміністратор клініки" },
+      { "name": "DOCTOR", "description": "Лікар" },
+      { "name": "PATIENT", "description": "Пацієнт" }
+    ]
+  },
+  "clients": [
+    {
+      "clientId": "clinic-app",
+      "name": "Clinic App",
+      "enabled": true,
+      "protocol": "openid-connect",
+      "publicClient": false,
+      "clientAuthenticatorType": "client-secret",
+      "secret": "clinic-app-secret",
+      "standardFlowEnabled": true,
+      "directAccessGrantsEnabled": true,
+      "serviceAccountsEnabled": false,
+      "redirectUris": [
+        "http://localhost:8080/login/oauth2/code/keycloak",
+        "http://localhost:8080/*"
+      ],
+      "webOrigins": ["http://localhost:8080"],
+      "fullScopeAllowed": true
+    }
+  ],
+  "users": [
+    {
+      "id": "11111111-1111-1111-1111-111111111111",
+      "username": "admin1",
+      "enabled": true,
+      "emailVerified": true,
+      "firstName": "Admin",
+      "lastName": "Adminenko",
+      "email": "admin1@clinic.local",
+      "credentials": [
+        { "type": "password", "value": "admin123", "temporary": false }
+      ],
+      "realmRoles": ["ADMIN"]
+    },
+    {
+      "id": "22222222-2222-2222-2222-222222222222",
+      "username": "doctor1",
+      "enabled": true,
+      "emailVerified": true,
+      "firstName": "Олена",
+      "lastName": "Коваленко",
+      "email": "doctor1@clinic.local",
+      "credentials": [
+        { "type": "password", "value": "doctor123", "temporary": false }
+      ],
+      "realmRoles": ["DOCTOR"]
+    },
+    {
+      "id": "33333333-3333-3333-3333-333333333333",
+      "username": "patient1",
+      "enabled": true,
+      "emailVerified": true,
+      "firstName": "Марія",
+      "lastName": "Іваненко",
+      "email": "patient1@clinic.local",
+      "credentials": [
+        { "type": "password", "value": "patient123", "temporary": false }
+      ],
+      "realmRoles": ["PATIENT"]
+    },
+    {
+      "id": "44444444-4444-4444-4444-444444444444",
+      "username": "patient2",
+      "enabled": true,
+      "emailVerified": true,
+      "firstName": "Andrii",
+      "lastName": "Petrenko",
+      "email": "patient2@clinic.local",
+      "credentials": [
+        { "type": "password", "value": "patient123", "temporary": false }
+      ],
+      "realmRoles": ["PATIENT"]
+    }
+  ]
+}
+
+
+
+
+
+
+

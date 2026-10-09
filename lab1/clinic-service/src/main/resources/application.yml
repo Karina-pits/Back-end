@@ -1,0 +1,54 @@
+server:
+  port: 8080
+
+spring:
+  application:
+    name: clinic-service
+
+  datasource:
+    url: jdbc:postgresql://${DB_HOST:localhost}:${DB_PORT:5432}/${DB_NAME:clinic_db}
+    username: ${DB_USER:clinic}
+    password: ${DB_PASSWORD:clinic}
+    driver-class-name: org.postgresql.Driver
+
+  jpa:
+    hibernate:
+      # Schema is fully owned by Liquibase (AC2) - Hibernate must never create/alter it.
+      ddl-auto: validate
+    properties:
+      hibernate:
+        format_sql: true
+    show-sql: false
+    open-in-view: false
+
+  liquibase:
+    enabled: true
+    change-log: classpath:db/changelog/db.changelog-master.xml
+
+  thymeleaf:
+    cache: false
+
+  security:
+    oauth2:
+      # --- Used by the UI (oauth2Login / Authorization Code flow) ---
+      client:
+        registration:
+          keycloak:
+            client-id: ${KEYCLOAK_CLIENT_ID:clinic-app}
+            client-secret: ${KEYCLOAK_CLIENT_SECRET:clinic-app-secret}
+            authorization-grant-type: authorization_code
+            scope: openid, profile, email
+            redirect-uri: "{baseUrl}/login/oauth2/code/{registrationId}"
+        provider:
+          keycloak:
+            issuer-uri: ${KEYCLOAK_ISSUER_URI:http://localhost:8081/realms/clinic}
+
+      # --- Used by the API (oauth2ResourceServer / Bearer JWT) ---
+      resourceserver:
+        jwt:
+          issuer-uri: ${KEYCLOAK_ISSUER_URI:http://localhost:8081/realms/clinic}
+
+logging:
+  level:
+    org.springframework.security: INFO
+    com.clinic: DEBUG

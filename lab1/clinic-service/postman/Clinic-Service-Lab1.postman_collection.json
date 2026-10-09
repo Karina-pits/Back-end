@@ -1,0 +1,328 @@
+{
+  "info": {
+    "name": "Clinic Service - Lab 1",
+    "description": "Колекція для захисту лабораторної роботи №1: отримання JWT від Keycloak та демонстрація CRUD + обмежень доступу (SecurityFilterChain і @PreAuthorize).",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    { "key": "baseUrl", "value": "http://localhost:8080" },
+    { "key": "keycloakUrl", "value": "http://localhost:8081" },
+    { "key": "adminToken", "value": "" },
+    { "key": "doctorToken", "value": "" },
+    { "key": "patientToken", "value": "" }
+  ],
+  "item": [
+    {
+      "name": "0. Auth (get tokens)",
+      "item": [
+        {
+          "name": "Get token - admin1 (ADMIN)",
+          "event": [{ "listen": "test", "script": { "exec": [
+            "var json = pm.response.json();",
+            "pm.collectionVariables.set('adminToken', json.access_token);"
+          ]}}],
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/x-www-form-urlencoded" }],
+            "url": "{{keycloakUrl}}/realms/clinic/protocol/openid-connect/token",
+            "body": {
+              "mode": "urlencoded",
+              "urlencoded": [
+                { "key": "grant_type", "value": "password" },
+                { "key": "client_id", "value": "clinic-app" },
+                { "key": "client_secret", "value": "clinic-app-secret" },
+                { "key": "username", "value": "admin1" },
+                { "key": "password", "value": "admin123" }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Get token - doctor1 (DOCTOR)",
+          "event": [{ "listen": "test", "script": { "exec": [
+            "var json = pm.response.json();",
+            "pm.collectionVariables.set('doctorToken', json.access_token);"
+          ]}}],
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/x-www-form-urlencoded" }],
+            "url": "{{keycloakUrl}}/realms/clinic/protocol/openid-connect/token",
+            "body": {
+              "mode": "urlencoded",
+              "urlencoded": [
+                { "key": "grant_type", "value": "password" },
+                { "key": "client_id", "value": "clinic-app" },
+                { "key": "client_secret", "value": "clinic-app-secret" },
+                { "key": "username", "value": "doctor1" },
+                { "key": "password", "value": "doctor123" }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Get token - patient1 (PATIENT)",
+          "event": [{ "listen": "test", "script": { "exec": [
+            "var json = pm.response.json();",
+            "pm.collectionVariables.set('patientToken', json.access_token);"
+          ]}}],
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/x-www-form-urlencoded" }],
+            "url": "{{keycloakUrl}}/realms/clinic/protocol/openid-connect/token",
+            "body": {
+              "mode": "urlencoded",
+              "urlencoded": [
+                { "key": "grant_type", "value": "password" },
+                { "key": "client_id", "value": "clinic-app" },
+                { "key": "client_secret", "value": "clinic-app-secret" },
+                { "key": "username", "value": "patient1" },
+                { "key": "password", "value": "patient123" }
+              ]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "1. Departments (CRUD)",
+      "item": [
+        {
+          "name": "GET all departments (any authenticated)",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{patientToken}}" }],
+            "url": "{{baseUrl}}/api/departments"
+          }
+        },
+        {
+          "name": "POST create department as ADMIN (201)",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{adminToken}}" },
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "url": "{{baseUrl}}/api/departments",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Неврологія\",\n  \"description\": \"Діагностика захворювань нервової системи\"\n}"
+            }
+          }
+        },
+        {
+          "name": "POST create department as PATIENT -> 403 (AC6, SecurityFilterChain)",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{patientToken}}" },
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "url": "{{baseUrl}}/api/departments",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Хірургія\",\n  \"description\": \"test\"\n}"
+            }
+          }
+        },
+        {
+          "name": "PUT update department as ADMIN",
+          "request": {
+            "method": "PUT",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{adminToken}}" },
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "url": "{{baseUrl}}/api/departments/1",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Кардіологія (оновлено)\",\n  \"description\": \"Оновлений опис\"\n}"
+            }
+          }
+        },
+        {
+          "name": "DELETE department as DOCTOR -> 403 (AC6)",
+          "request": {
+            "method": "DELETE",
+            "header": [{ "key": "Authorization", "value": "Bearer {{doctorToken}}" }],
+            "url": "{{baseUrl}}/api/departments/2"
+          }
+        }
+      ]
+    },
+    {
+      "name": "2. Doctors (CRUD)",
+      "item": [
+        {
+          "name": "GET all doctors",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{patientToken}}" }],
+            "url": "{{baseUrl}}/api/doctors"
+          }
+        },
+        {
+          "name": "POST create doctor as ADMIN",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{adminToken}}" },
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "url": "{{baseUrl}}/api/doctors",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"firstName\": \"Тест\",\n  \"lastName\": \"Лікаренко\",\n  \"specialization\": \"Невролог\",\n  \"email\": \"doctor3@clinic.local\",\n  \"departmentId\": 1\n}"
+            }
+          }
+        },
+        {
+          "name": "POST create doctor as DOCTOR -> 403 (AC7, @PreAuthorize)",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{doctorToken}}" },
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "url": "{{baseUrl}}/api/doctors",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"firstName\": \"X\",\n  \"lastName\": \"Y\",\n  \"specialization\": \"Z\",\n  \"email\": \"x@clinic.local\",\n  \"departmentId\": 1\n}"
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "3. Patients (ownership rules)",
+      "item": [
+        {
+          "name": "GET all patients as ADMIN (200)",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{adminToken}}" }],
+            "url": "{{baseUrl}}/api/patients"
+          }
+        },
+        {
+          "name": "GET all patients as PATIENT -> 403 (AC6, SecurityFilterChain)",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{patientToken}}" }],
+            "url": "{{baseUrl}}/api/patients"
+          }
+        },
+        {
+          "name": "GET own patient record (id=1) as PATIENT (200)",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{patientToken}}" }],
+            "url": "{{baseUrl}}/api/patients/1"
+          }
+        },
+        {
+          "name": "GET another patient's record (id=2) as PATIENT -> 403 (ownership check)",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{patientToken}}" }],
+            "url": "{{baseUrl}}/api/patients/2"
+          }
+        }
+      ]
+    },
+    {
+      "name": "4. Appointments",
+      "item": [
+        {
+          "name": "GET appointments as PATIENT (only own)",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{patientToken}}" }],
+            "url": "{{baseUrl}}/api/appointments"
+          }
+        },
+        {
+          "name": "GET appointments as DOCTOR (only own)",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{doctorToken}}" }],
+            "url": "{{baseUrl}}/api/appointments"
+          }
+        },
+        {
+          "name": "GET appointments as ADMIN (all)",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{adminToken}}" }],
+            "url": "{{baseUrl}}/api/appointments"
+          }
+        },
+        {
+          "name": "POST create appointment as PATIENT (self)",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{patientToken}}" },
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "url": "{{baseUrl}}/api/appointments",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"patientId\": 1,\n  \"doctorId\": 1,\n  \"scheduledAt\": \"2026-10-01T09:00:00\",\n  \"reason\": \"Консультація\"\n}"
+            }
+          }
+        },
+        {
+          "name": "PATCH update status as DOCTOR (200)",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{doctorToken}}" },
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "url": "{{baseUrl}}/api/appointments/1/status",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"status\": \"COMPLETED\"\n}"
+            }
+          }
+        },
+        {
+          "name": "PATCH update status as PATIENT -> 403 (AC7, @PreAuthorize)",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{patientToken}}" },
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "url": "{{baseUrl}}/api/appointments/1/status",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"status\": \"COMPLETED\"\n}"
+            }
+          }
+        },
+        {
+          "name": "DELETE appointment as ADMIN",
+          "request": {
+            "method": "DELETE",
+            "header": [{ "key": "Authorization", "value": "Bearer {{adminToken}}" }],
+            "url": "{{baseUrl}}/api/appointments/1"
+          }
+        }
+      ]
+    },
+    {
+      "name": "5. No token -> 401",
+      "item": [
+        {
+          "name": "GET departments without token (401)",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": "{{baseUrl}}/api/departments"
+          }
+        }
+      ]
+    }
+  ]
+}

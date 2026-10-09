@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8"/>
+    <title>Форма відділення</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}"/>
+</head>
+<body>
+<header>
+    <div><a th:href="@{/}">🏥 Clinic</a> <a th:href="@{/ui/departments}">Відділення</a></div>
+</header>
+<main>
+    <h1 th:text="${department.id} != null ? 'Редагувати відділення' : 'Нове відділення'"></h1>
+    <form th:action="${department.id} != null ? @{/ui/departments/{id}(id=${department.id})} : @{/ui/departments}"
+          th:object="${department}" method="post">
+        <div class="form-group">
+            <label>Назва</label>
+            <input type="text" th:field="*{name}" required="required"/>
+        </div>
+        <div class="form-group">
+            <label>Опис</label>
+            <textarea th:field="*{description}"></textarea>
+        </div>
+        <button class="btn" type="submit">Зберегти</button>
+        <a class="btn btn-secondary" th:href="@{/ui/departments}">Скасувати</a>
+    </form>
+</main>
+</body>
+</html>

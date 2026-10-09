@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+        http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-4.20.xsd">
+
+    <changeSet id="001-create-department-table" author="clinic">
+        <createTable tableName="department">
+            <column name="id" type="BIGSERIAL">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="name" type="VARCHAR(150)">
+                <constraints nullable="false" unique="true" uniqueConstraintName="uk_department_name"/>
+            </column>
+            <column name="description" type="VARCHAR(500)"/>
+        </createTable>
+    </changeSet>
+
+    <changeSet id="002-create-doctor-table" author="clinic">
+        <createTable tableName="doctor">
+            <column name="id" type="BIGSERIAL">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="first_name" type="VARCHAR(100)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="last_name" type="VARCHAR(100)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="specialization" type="VARCHAR(150)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="email" type="VARCHAR(150)">
+                <constraints unique="true" uniqueConstraintName="uk_doctor_email"/>
+            </column>
+            <column name="keycloak_user_id" type="VARCHAR(100)"/>
+            <column name="department_id" type="BIGINT">
+                <constraints nullable="false" foreignKeyName="fk_doctor_department" references="department(id)"/>
+            </column>
+        </createTable>
+    </changeSet>
+
+    <changeSet id="003-create-patient-table" author="clinic">
+        <createTable tableName="patient">
+            <column name="id" type="BIGSERIAL">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="first_name" type="VARCHAR(100)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="last_name" type="VARCHAR(100)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="date_of_birth" type="DATE"/>
+            <column name="phone" type="VARCHAR(30)"/>
+            <column name="email" type="VARCHAR(150)">
+                <constraints unique="true" uniqueConstraintName="uk_patient_email"/>
+            </column>
+            <column name="keycloak_user_id" type="VARCHAR(100)"/>
+        </createTable>
+    </changeSet>
+
+    <changeSet id="004-create-appointment-table" author="clinic">
+        <createTable tableName="appointment">
+            <column name="id" type="BIGSERIAL">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="patient_id" type="BIGINT">
+                <constraints nullable="false" foreignKeyName="fk_appointment_patient" references="patient(id)"/>
+            </column>
+            <column name="doctor_id" type="BIGINT">
+                <constraints nullable="false" foreignKeyName="fk_appointment_doctor" references="doctor(id)"/>
+            </column>
+            <column name="scheduled_at" type="TIMESTAMP">
+                <constraints nullable="false"/>
+            </column>
+            <column name="reason" type="VARCHAR(500)"/>
+            <column name="status" type="VARCHAR(20)">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+    </changeSet>
+
+</databaseChangeLog>

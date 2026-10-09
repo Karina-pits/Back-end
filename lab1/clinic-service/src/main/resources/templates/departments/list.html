@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8"/>
+    <title>Відділення</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}"/>
+</head>
+<body>
+<header>
+    <div>
+        <a th:href="@{/}">🏥 Clinic</a>
+        <a th:href="@{/ui/departments}">Відділення</a>
+        <a th:href="@{/ui/doctors}">Лікарі</a>
+        <a th:href="@{/ui/patients}">Пацієнти</a>
+        <a th:href="@{/ui/appointments}">Записи на прийом</a>
+    </div>
+    <a th:href="@{/logout}">Вийти</a>
+</header>
+<main>
+    <h1>Відділення</h1>
+    <a class="btn" th:href="@{/ui/departments/new}">+ Додати відділення</a>
+
+    <table>
+        <thead>
+        <tr><th>ID</th><th>Назва</th><th>Опис</th><th>Дії</th></tr>
+        </thead>
+        <tbody>
+        <tr th:each="d : ${departments}">
+            <td th:text="${d.id}"></td>
+            <td th:text="${d.name}"></td>
+            <td th:text="${d.description}"></td>
+            <td>
+                <a class="btn btn-secondary" th:href="@{/ui/departments/{id}/edit(id=${d.id})}">Редагувати</a>
+                <form class="inline" th:action="@{/ui/departments/{id}/delete(id=${d.id})}" method="post"
+                      onsubmit="return confirm('Видалити відділення?');">
+                    <button class="btn btn-danger" type="submit">Видалити</button>
+                </form>
+            </td>
+        </tr>
+        </tbody>
+    </table>
+    <p style="margin-top:16px;color:#666;font-size:13px;">
+        Створення/редагування/видалення доступне лише ролі <b>ADMIN</b> (перевіряється і в SecurityFilterChain, і через @PreAuthorize).
+    </p>
+</main>
+</body>
+</html>

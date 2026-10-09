@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8"/>
+    <title>Пацієнти</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}"/>
+</head>
+<body>
+<header>
+    <div>
+        <a th:href="@{/}">🏥 Clinic</a>
+        <a th:href="@{/ui/departments}">Відділення</a>
+        <a th:href="@{/ui/doctors}">Лікарі</a>
+        <a th:href="@{/ui/patients}">Пацієнти</a>
+        <a th:href="@{/ui/appointments}">Записи на прийом</a>
+    </div>
+    <a th:href="@{/logout}">Вийти</a>
+</header>
+<main>
+    <h1>Пацієнти</h1>
+    <a class="btn" th:href="@{/ui/patients/new}">+ Додати пацієнта</a>
+    <p style="color:#666;font-size:13px;">Список усіх пацієнтів доступний лише ролям ADMIN/DOCTOR (SecurityFilterChain: GET /api/patients).</p>
+
+    <table>
+        <thead>
+        <tr><th>ID</th><th>ПІБ</th><th>Дата народження</th><th>Телефон</th><th>Email</th><th>Дії</th></tr>
+        </thead>
+        <tbody>
+        <tr th:each="p : ${patients}">
+            <td th:text="${p.id}"></td>
+            <td th:text="${p.firstName} + ' ' + ${p.lastName}"></td>
+            <td th:text="${p.dateOfBirth}"></td>
+            <td th:text="${p.phone}"></td>
+            <td th:text="${p.email}"></td>
+            <td>
+                <a class="btn btn-secondary" th:href="@{/ui/patients/{id}/edit(id=${p.id})}">Редагувати</a>
+                <form class="inline" th:action="@{/ui/patients/{id}/delete(id=${p.id})}" method="post"
+                      onsubmit="return confirm('Видалити пацієнта?');">
+                    <button class="btn btn-danger" type="submit">Видалити</button>
+                </form>
+            </td>
+        </tr>
+        </tbody>
+    </table>
+</main>
+</body>
+</html>

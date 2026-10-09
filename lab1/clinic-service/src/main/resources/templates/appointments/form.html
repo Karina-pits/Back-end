@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8"/>
+    <title>Запис на прийом</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}"/>
+</head>
+<body>
+<header>
+    <div><a th:href="@{/}">🏥 Clinic</a> <a th:href="@{/ui/appointments}">Записи на прийом</a></div>
+</header>
+<main>
+    <h1>Новий запис на прийом</h1>
+    <p th:if="${myPatientName}" style="color:#666;">Пацієнт: <b th:text="${myPatientName}"></b> (визначено автоматично за вашим обліковим записом)</p>
+
+    <form th:action="@{/ui/appointments}" th:object="${appointment}" method="post">
+        <input type="hidden" th:field="*{patientId}"/>
+
+        <div class="form-group" th:unless="${myPatientName}">
+            <label>ID пацієнта</label>
+            <input type="number" th:field="*{patientId}" required="required"/>
+        </div>
+
+        <div class="form-group">
+            <label>Лікар</label>
+            <select th:field="*{doctorId}" required="required">
+                <option th:each="doc : ${doctors}" th:value="${doc.id}"
+                        th:text="${doc.firstName} + ' ' + ${doc.lastName} + ' (' + ${doc.specialization} + ')'"></option>
+            </select>
+        </div>
+
+        <div class="form-group">
+            <label>Дата та час</label>
+            <input type="datetime-local" th:field="*{scheduledAt}" required="required"/>
+        </div>
+
+        <div class="form-group">
+            <label>Причина звернення</label>
+            <textarea th:field="*{reason}"></textarea>
+        </div>
+
+        <button class="btn" type="submit">Записатись</button>
+        <a class="btn btn-secondary" th:href="@{/ui/appointments}">Скасувати</a>
+    </form>
+</main>
+</body>
+</html>
