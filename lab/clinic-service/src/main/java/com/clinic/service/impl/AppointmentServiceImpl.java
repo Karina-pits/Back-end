@@ -1,5 +1,8 @@
 package com.clinic.service.impl;
 
+import com.clinic.aop.annotation.Audited;
+import com.clinic.aop.annotation.MeasureTime;
+import com.clinic.aop.annotation.RateLimited;
 import com.clinic.dto.AppointmentDto;
 import com.clinic.entity.Appointment;
 import com.clinic.entity.AppointmentStatus;
@@ -32,6 +35,7 @@ public class AppointmentServiceImpl implements AppointmentService {
     private final SecurityUtils securityUtils;
 
     @Override
+    @MeasureTime // ← лаба 4: вимірювання часу виконання
     @Transactional(readOnly = true)
     public List<AppointmentDto> findAllVisibleToCurrentUser() {
         String userId = securityUtils.getCurrentUserId();
@@ -41,7 +45,7 @@ public class AppointmentServiceImpl implements AppointmentService {
         } else if (securityUtils.isDoctor()) {
             appointments = appointmentRepository.findByDoctorKeycloakUserId(userId);
         } else {
-             appointments = appointmentRepository.findByPatientKeycloakUserId(userId);
+            appointments = appointmentRepository.findByPatientKeycloakUserId(userId);
         }
         return appointments.stream().map(appointmentMapper::toDto).toList();
     }
@@ -55,6 +59,7 @@ public class AppointmentServiceImpl implements AppointmentService {
     }
 
     @Override
+    @RateLimited(maxCalls = 5, windowSeconds = 60) // ← лаба 4: ліміт викликів на користувача
     @PreAuthorize("isAuthenticated()")
     public AppointmentDto create(AppointmentDto dto) {
         Patient patient = patientRepository.findById(dto.getPatientId())
@@ -111,6 +116,7 @@ public class AppointmentServiceImpl implements AppointmentService {
     }
 
     @Override
+    @Audited(action = "CANCEL_APPOINTMENT") // ← лаба 4: запис в журнал аудиту
     @PreAuthorize("isAuthenticated()")
     public void cancel(Long id) {
         Appointment appointment = getOrThrow(id);
@@ -120,6 +126,7 @@ public class AppointmentServiceImpl implements AppointmentService {
     }
 
     @Override
+    @Audited(action = "DELETE_APPOINTMENT") // ← лаба 4: запис в журнал аудиту
     @PreAuthorize("hasRole('ADMIN')")
     public void delete(Long id) {
         Appointment appointment = getOrThrow(id);
