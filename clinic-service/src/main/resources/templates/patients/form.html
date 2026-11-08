@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8"/>
+    <title>Форма пацієнта</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}"/>
+</head>
+<body>
+<header>
+    <div><a th:href="@{/}">🏥 Clinic</a> <a th:href="@{/ui/patients}">Пацієнти</a></div>
+</header>
+<main>
+    <h1 th:text="${patient.id} != null ? 'Редагувати пацієнта' : 'Новий пацієнт'"></h1>
+    <form th:action="${patient.id} != null ? @{/ui/patients/{id}(id=${patient.id})} : @{/ui/patients}"
+          th:object="${patient}" method="post">
+        <div class="form-group">
+            <label>Ім'я</label>
+            <input type="text" th:field="*{firstName}" required="required"/>
+        </div>
+        <div class="form-group">
+            <label>Прізвище</label>
+            <input type="text" th:field="*{lastName}" required="required"/>
+        </div>
+        <div class="form-group">
+            <label>Дата народження</label>
+            <input type="date" th:field="*{dateOfBirth}"/>
+        </div>
+        <div class="form-group">
+            <label>Телефон</label>
+            <input type="text" th:field="*{phone}"/>
+        </div>
+        <div class="form-group">
+            <label>Email</label>
+            <input type="email" th:field="*{email}"/>
+        </div>
+        <div class="form-group">
+            <label>Keycloak User ID (опційно, для входу пацієнта)</label>
+            <input type="text" th:field="*{keycloakUserId}"/>
+        </div>
+        <button class="btn" type="submit">Зберегти</button>
+        <a class="btn btn-secondary" th:href="@{/ui/patients}">Скасувати</a>
+    </form>
+</main>
+</body>
+</html>

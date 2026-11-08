@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8"/>
+    <title>Форма лікаря</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}"/>
+</head>
+<body>
+<header>
+    <div><a th:href="@{/}">🏥 Clinic</a> <a th:href="@{/ui/doctors}">Лікарі</a></div>
+</header>
+<main>
+    <h1 th:text="${doctor.id} != null ? 'Редагувати лікаря' : 'Новий лікар'"></h1>
+    <form th:action="${doctor.id} != null ? @{/ui/doctors/{id}(id=${doctor.id})} : @{/ui/doctors}"
+          th:object="${doctor}" method="post">
+        <div class="form-group">
+            <label>Ім'я</label>
+            <input type="text" th:field="*{firstName}" required="required"/>
+        </div>
+        <div class="form-group">
+            <label>Прізвище</label>
+            <input type="text" th:field="*{lastName}" required="required"/>
+        </div>
+        <div class="form-group">
+            <label>Спеціалізація</label>
+            <input type="text" th:field="*{specialization}" required="required"/>
+        </div>
+        <div class="form-group">
+            <label>Email</label>
+            <input type="email" th:field="*{email}"/>
+        </div>
+        <div class="form-group">
+            <label>Keycloak User ID (опційно, для входу лікаря)</label>
+            <input type="text" th:field="*{keycloakUserId}"/>
+        </div>
+        <div class="form-group">
+            <label>Відділення</label>
+            <select th:field="*{departmentId}" required="required">
+                <option th:each="dep : ${departments}" th:value="${dep.id}" th:text="${dep.name}"></option>
+            </select>
+        </div>
+        <button class="btn" type="submit">Зберегти</button>
+        <a class="btn btn-secondary" th:href="@{/ui/doctors}">Скасувати</a>
+    </form>
+</main>
+</body>
+</html>

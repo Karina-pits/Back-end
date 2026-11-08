@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8"/>
+    <title>Записи на прийом</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}"/>
+</head>
+<body>
+<header>
+    <div>
+        <a th:href="@{/}">🏥 Clinic</a>
+        <a th:href="@{/ui/departments}">Відділення</a>
+        <a th:href="@{/ui/doctors}">Лікарі</a>
+        <a th:href="@{/ui/patients}">Пацієнти</a>
+        <a th:href="@{/ui/appointments}">Записи на прийом</a>
+    </div>
+    <a th:href="@{/logout}">Вийти</a>
+</header>
+<main>
+    <h1>Записи на прийом</h1>
+    <a class="btn" th:href="@{/ui/appointments/new}">+ Записатись на прийом</a>
+    <p style="color:#666;font-size:13px;">
+        ADMIN бачить усі записи, DOCTOR — лише свої прийоми, PATIENT — лише власні записи.
+    </p>
+
+    <table>
+        <thead>
+        <tr><th>ID</th><th>Пацієнт</th><th>Лікар</th><th>Дата/час</th><th>Причина</th><th>Статус</th><th>Дії</th></tr>
+        </thead>
+        <tbody>
+        <tr th:each="a : ${appointments}">
+            <td th:text="${a.id}"></td>
+            <td th:text="${a.patientFullName}"></td>
+            <td th:text="${a.doctorFullName}"></td>
+            <td th:text="${a.scheduledAt}"></td>
+            <td th:text="${a.reason}"></td>
+            <td><span class="badge" th:classappend="'status-' + ${a.status}" th:text="${a.status}"></span></td>
+            <td>
+                <form class="inline" th:action="@{/ui/appointments/{id}/complete(id=${a.id})}" method="post">
+                    <button class="btn" type="submit" title="Лише ADMIN/DOCTOR">Завершити</button>
+                </form>
+                <form class="inline" th:action="@{/ui/appointments/{id}/cancel(id=${a.id})}" method="post"
+                      onsubmit="return confirm('Скасувати запис?');">
+                    <button class="btn btn-secondary" type="submit">Скасувати</button>
+                </form>
+                <form class="inline" th:action="@{/ui/appointments/{id}/delete(id=${a.id})}" method="post"
+                      onsubmit="return confirm('Видалити запис?');">
+                    <button class="btn btn-danger" type="submit" title="Лише ADMIN">Видалити</button>
+                </form>
+            </td>
+        </tr>
+        </tbody>
+    </table>
+</main>
+</body>
+</html>

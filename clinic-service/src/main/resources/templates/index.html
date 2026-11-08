@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8"/>
+    <title>Clinic - Головна</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}"/>
+</head>
+<body>
+<header>
+    <div>
+        <a th:href="@{/}">🏥 Clinic</a>
+        <a th:href="@{/ui/departments}">Відділення</a>
+        <a th:href="@{/ui/doctors}">Лікарі</a>
+        <a th:href="@{/ui/patients}">Пацієнти</a>
+        <a th:href="@{/ui/appointments}">Записи на прийом</a>
+    </div>
+    <div>
+        <span th:if="${authenticated}" th:text="'Вітаємо, ' + ${username}"></span>
+        <a th:if="${authenticated}" th:href="@{/logout}" style="margin-left:12px;">Вийти</a>
+        <a th:unless="${authenticated}" th:href="@{/oauth2/authorization/keycloak}">Увійти</a>
+    </div>
+</header>
+<main>
+    <h1>Інформаційна система приватної клініки</h1>
+    <p>Лабораторна робота №1 — базовий CRUD, Liquibase-міграції, OIDC (UI) + JWT (API), SecurityFilterChain та @PreAuthorize.</p>
+
+    <div th:if="${authenticated}">
+        <p>Ваші ролі: <span th:each="a : ${authorities}" class="badge" th:text="${a}"></span></p>
+    </div>
+    <div th:unless="${authenticated}">
+        <p>Увійдіть через Keycloak, щоб керувати даними клініки.</p>
+    </div>
+</main>
+</body>
+</html>

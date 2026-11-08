@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+        http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-4.20.xsd">
+
+    <!--
+        keycloak_user_id values below match the fixed "id" fields of the demo
+        users defined in keycloak/realm-export.json (doctor1 / patient1), so a
+        fresh environment (docker-compose up) already has working ownership
+        links for AC5/AC7 demonstrations without any manual setup.
+    -->
+
+    <changeSet id="005-seed-departments" author="clinic">
+        <insert tableName="department">
+            <column name="name" value="Кардіологія"/>
+            <column name="description" value="Діагностика та лікування захворювань серцево-судинної системи"/>
+        </insert>
+        <insert tableName="department">
+            <column name="name" value="Терапія"/>
+            <column name="description" value="Загальна терапевтична допомога"/>
+        </insert>
+    </changeSet>
+
+    <changeSet id="006-seed-doctors" author="clinic">
+        <insert tableName="doctor">
+            <column name="first_name" value="Олена"/>
+            <column name="last_name" value="Коваленко"/>
+            <column name="specialization" value="Кардіолог"/>
+            <column name="email" value="doctor1@clinic.local"/>
+            <column name="keycloak_user_id" value="22222222-2222-2222-2222-222222222222"/>
+            <column name="department_id" valueComputed="(SELECT id FROM department WHERE name = 'Кардіологія')"/>
+        </insert>
+        <insert tableName="doctor">
+            <column name="first_name" value="Ігор"/>
+            <column name="last_name" value="Марченко"/>
+            <column name="specialization" value="Терапевт"/>
+            <column name="email" value="doctor2@clinic.local"/>
+            <column name="department_id" valueComputed="(SELECT id FROM department WHERE name = 'Терапія')"/>
+        </insert>
+    </changeSet>
+
+    <changeSet id="007-seed-patients" author="clinic">
+        <insert tableName="patient">
+            <column name="first_name" value="Марія"/>
+            <column name="last_name" value="Іваненко"/>
+            <column name="date_of_birth" value="1990-05-14"/>
+            <column name="phone" value="+380501234567"/>
+            <column name="email" value="patient1@clinic.local"/>
+            <column name="keycloak_user_id" value="33333333-3333-3333-3333-333333333333"/>
+        </insert>
+        <insert tableName="patient">
+            <column name="first_name" value="Andrii"/>
+            <column name="last_name" value="Petrenko"/>
+            <column name="date_of_birth" value="1985-11-02"/>
+            <column name="phone" value="+380671112233"/>
+            <column name="email" value="patient2@clinic.local"/>
+            <column name="keycloak_user_id" value="44444444-4444-4444-4444-444444444444"/>
+        </insert>
+    </changeSet>
+
+    <changeSet id="008-seed-appointment" author="clinic">
+        <insert tableName="appointment">
+            <column name="patient_id" valueComputed="(SELECT id FROM patient WHERE email = 'patient1@clinic.local')"/>
+            <column name="doctor_id" valueComputed="(SELECT id FROM doctor WHERE email = 'doctor1@clinic.local')"/>
+            <column name="scheduled_at" valueDate="2026-09-25T10:00:00"/>
+            <column name="reason" value="Плановий огляд"/>
+            <column name="status" value="SCHEDULED"/>
+        </insert>
+    </changeSet>
+
+</databaseChangeLog>
