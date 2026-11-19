@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <!-- Кореневий POM успадковує Spring Boot Parent, щоб усі модулі отримали
+         однакове керування версіями залежностей і налаштування збірки. -->
+    <parent>
+        <groupId>org.springframework.boot</groupId>
+        <artifactId>spring-boot-starter-parent</artifactId>
+        <version>3.3.4</version>
+        <relativePath/>
+    </parent>
+
+    <groupId>com.clinic</groupId>
+    <artifactId>clinic-parent</artifactId>
+    <version>0.0.1-SNAPSHOT</version>
+    <packaging>pom</packaging>
+    <name>clinic-parent</name>
+    <description>Батьківський POM: об'єднує сервіси в один процес збірки (mvn verify)</description>
+
+    <!-- Усі сервіси й спільний модуль -->
+    <modules>
+        <module>common</module>
+        <module>notification-service</module>
+        <module>clinic-service</module>
+    </modules>
+
+    <properties>
+        <java.version>17</java.version>
+    </properties>
+
+    <!-- Залежність, яку використовують ВСІ модулі: оголошена тут, а не в кожному модулі -->
+    <dependencies>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-test</artifactId>
+            <scope>test</scope>
+        </dependency>
+    </dependencies>
+
+    <!-- УВАГА: spring-boot-maven-plugin тут навмисно НЕ оголошено.
+         Його оголошує кожен сервіс у власному POM, а модуль common
+
+        (звичайна бібліотека) залишається простим jar. -->
+    <build>
+        <pluginManagement>
+            <plugins>
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-surefire-plugin</artifactId>
+                    <version>3.2.5</version>
+                    <configuration>
+                        <argLine>-Djdk.net.URLClassPath.disableClassPathURLCheck=true</argLine>
+                    </configuration>
+                </plugin>
+            </plugins>
+        </pluginManagement>
+    </build>
+
+</project>

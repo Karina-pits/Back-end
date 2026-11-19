@@ -1,0 +1,10 @@
+server:
+  port: 8082   # 8080 займає clinic-service, 8081 займає Keycloak
+
+spring:
+  application:
+    name: notification-service
+
+notification:
+  # Імітація повільної відправки листа (SMTP), мс
+  simulated-delay-ms: 1000
