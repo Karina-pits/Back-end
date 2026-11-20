@@ -1,2 +1,10 @@
-com\clinic\notification\service\NotificationServiceApplication.class
-com\clinic\notification\service\MailSenderService.class
+com\clinic\notification\repository\AppointmentNotificationRepository.class
+com\clinic\notification\web\NotificationController$NotificationView.class
+com\clinic\notification\messaging\AppointmentEventListener.class
+com\clinic\notification\MailSenderService.class
+com\clinic\notification\NotificationProcessingService.class
+com\clinic\notification\NotificationServiceApplication.class
+com\clinic\notification\NotificationProcessingService$1.class
+com\clinic\notification\messaging\NotificationMessagingConfig.class
+com\clinic\notification\entity\AppointmentNotification.class
+com\clinic\notification\web\NotificationController.class

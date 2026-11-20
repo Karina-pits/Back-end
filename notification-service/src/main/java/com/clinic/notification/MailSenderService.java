@@ -1,4 +1,4 @@
-package com.clinic.notification.service;
+package com.clinic.notification;
 
 import com.clinic.common.dto.EmailRequest;
 import org.slf4j.Logger;

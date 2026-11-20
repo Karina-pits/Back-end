@@ -1,6 +1,7 @@
 package com.clinic.notification.service;
 
 import com.clinic.common.dto.EmailRequest;
+import com.clinic.notification.MailSenderService;
 import org.junit.jupiter.api.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;

@@ -12,7 +12,7 @@
 
     <groupId>com.clinic</groupId>
     <artifactId>clinic-service</artifactId>
-    <version>1.0.0</version>
+    <version>0.0.1-SNAPSHOT</version>
     <name>clinic-service</name>
     <description>Lab 1 - Spring Security: Medical Clinic Management System</description>
 
@@ -24,6 +24,15 @@
 
     <dependencies>
         <!-- Web + UI -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-amqp</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.clinic</groupId>
+            <artifactId>common</artifactId>
+            <version>${project.version}</version>
+        </dependency>
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-web</artifactId>
@@ -44,6 +53,7 @@
             <groupId>org.thymeleaf.extras</groupId>
             <artifactId>thymeleaf-extras-springsecurity6</artifactId>
         </dependency>
+
 
         <!-- Security: OIDC (UI) + JWT Resource Server (API) -->
         <dependency>

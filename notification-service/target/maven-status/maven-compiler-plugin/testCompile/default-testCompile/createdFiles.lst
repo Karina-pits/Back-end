@@ -1,1 +1,3 @@
 com\clinic\notification\service\MailSenderServiceTest.class
+com\clinic\notification\NotificationIsolationTest.class
+com\clinic\notification\service\NotificationProcessingServiceTest.class

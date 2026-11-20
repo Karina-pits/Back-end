@@ -1,2 +1,4 @@
 com\clinic\common\dto\EmailRequest.class
+com\clinic\common\dto\AppointmentEvent.class
+com\clinic\common\dto\AppointmentEventType.class
 com\clinic\common\dto\EmailResponse.class

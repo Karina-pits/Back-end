@@ -19,7 +19,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.security.access.AccessDeniedException;
-
+import org.springframework.context.ApplicationEventPublisher;
 import java.time.LocalDateTime;
 import java.util.Optional;
 
@@ -46,6 +46,9 @@ class AppointmentServiceImplTest {
     private AppointmentMapper appointmentMapper;
     @Mock
     private SecurityUtils securityUtils;
+
+    @Mock
+    private ApplicationEventPublisher eventPublisher;
 
     @InjectMocks
     private AppointmentServiceImpl appointmentService;

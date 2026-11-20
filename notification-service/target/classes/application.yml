@@ -4,6 +4,23 @@ server:
 spring:
   application:
     name: notification-service
+  rabbitmq:
+    host: ${RABBITMQ_HOST:localhost}
+    port: ${RABBITMQ_PORT:5672}
+    username: ${RABBITMQ_USER:clinic}
+    password: ${RABBITMQ_PASSWORD:clinic}
+  datasource:
+    url: jdbc:postgresql://${DB_HOST:localhost}:${DB_PORT:5433}/${DB_NAME:notification_db}
+    username: ${DB_USER:notification}
+    password: ${DB_PASSWORD:notification}
+    driver-class-name: org.postgresql.Driver
+  jpa:
+    hibernate:
+      ddl-auto: validate
+    open-in-view: false
+  liquibase:
+    enabled: true
+    change-log: classpath:db/changelog/db.changelog-master.xml
 
 notification:
   # Імітація повільної відправки листа (SMTP), мс

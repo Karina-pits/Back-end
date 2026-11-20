@@ -1,0 +1,106 @@
+name: clinic
+
+services:
+
+  # ---------- Брокер повідомлень ----------
+  rabbitmq:
+    image: rabbitmq:3.13-management-alpine
+    container_name: clinic-rabbitmq
+    restart: unless-stopped
+    environment:
+      # guest/guest працює лише з localhost самого брокера, тому свій користувач
+      RABBITMQ_DEFAULT_USER: clinic
+      RABBITMQ_DEFAULT_PASS: clinic
+    ports:
+      - "5672:5672"     # AMQP: сюди підключаються сервіси
+      - "15672:15672"   # веб-інтерфейс керування: http://localhost:15672 (clinic / clinic)
+    volumes:
+      - rabbitmq-data:/var/lib/rabbitmq   # черги переживають перезапуск брокера
+    healthcheck:
+      test: ["CMD", "rabbitmq-diagnostics", "-q", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+
+  # ---------- Інфраструктура clinic-service ----------
+  postgres:
+    image: postgres:16-alpine
+    container_name: clinic-postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: clinic_db
+      POSTGRES_USER: clinic
+      POSTGRES_PASSWORD: clinic
+    ports:
+      - "5432:5432"
+    volumes:
+      - clinic-pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U clinic -d clinic_db"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  keycloak:
+    image: quay.io/keycloak/keycloak:25.0
+    container_name: clinic-keycloak
+    restart: unless-stopped
+    command: ["start-dev", "--import-realm"]
+    environment:
+      KEYCLOAK_ADMIN: admin
+      KEYCLOAK_ADMIN_PASSWORD: admin
+    ports:
+      - "8081:8080"
+    volumes:
+      - ./clinic-service/keycloak/realm-export.json:/opt/keycloak/data/import/realm-export.json:ro
+
+  # ---------- Власна база notification-service (у кожного сервісу своя БД) ----------
+  notification-db:
+    image: postgres:16-alpine
+    container_name: notification-postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: notification_db
+      POSTGRES_USER: notification
+      POSTGRES_PASSWORD: notification
+    ports:
+      - "5433:5432"
+    volumes:
+      - notification-pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U notification -d notification_db"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  # ---------- Споживач подій (запускається з профілем "apps") ----------
+  # Перед запуском зібери jar:  mvn -pl notification-service -am package -DskipTests
+  # Запуск:  docker compose --profile apps up -d --build
+  notification-service:
+    profiles: ["apps"]
+    build: ./notification-service
+    container_name: notification-service
+    restart: unless-stopped
+    depends_on:
+      rabbitmq:
+        condition: service_healthy
+      notification-db:
+        condition: service_healthy
+    environment:
+      # У Docker адреса сервісів це ІМ'Я СЕРВІСУ з цього файлу, а не localhost
+      RABBITMQ_HOST: rabbitmq
+      RABBITMQ_PORT: 5672
+      RABBITMQ_USER: clinic
+      RABBITMQ_PASSWORD: clinic
+      DB_HOST: notification-db
+      DB_PORT: 5432
+      DB_NAME: notification_db
+      DB_USER: notification
+      DB_PASSWORD: notification
+    ports:
+      - "8082:8082"
+
+volumes:
+  rabbitmq-data:
+  clinic-pgdata:
+  notification-pgdata:

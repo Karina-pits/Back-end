@@ -1,0 +1,40 @@
+server:
+  port: 8082   # 8080 займає clinic-service, 8081 займає Keycloak
+
+spring:
+  application:
+    name: notification-service
+
+  # Власна база цього сервісу. Із IDE береться localhost:5433 (за замовчуванням),
+  # у Docker адреса приходить зі змінної середовища NOTIFICATION_DB_URL.
+  datasource:
+    url: ${NOTIFICATION_DB_URL:jdbc:postgresql://localhost:5433/notification_db}
+    username: ${NOTIFICATION_DB_USER:notification}
+    password: ${NOTIFICATION_DB_PASSWORD:notification}
+
+  jpa:
+    hibernate:
+      ddl-auto: validate   # схемою керує тільки Liquibase
+
+  liquibase:
+    change-log: classpath:db/changelog/db.changelog-master.xml
+
+  # Адреса брокера береться зі змінної середовища.
+  # У Docker: RABBITMQ_HOST=rabbitmq (ім'я сервісу з compose.yml). З IDE: localhost.
+  rabbitmq:
+    host: ${RABBITMQ_HOST:localhost}
+    port: ${RABBITMQ_PORT:5672}
+    username: ${RABBITMQ_USER:clinic}
+    password: ${RABBITMQ_PASSWORD:clinic}
+    listener:
+      simple:
+        default-requeue-rejected: false   # після вичерпання спроб повідомлення йде в DLQ, а не по колу
+        retry:
+          enabled: true
+          max-attempts: 3
+          initial-interval: 1s
+          multiplier: 2
+
+notification:
+  # Імітація відправки листа (SMTP), мс
+  simulated-delay-ms: 300

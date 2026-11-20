@@ -1,2 +1,8 @@
-D:\3 курс\Back-end\lab\notification-service\src\main\java\com\clinic\notification\service\MailSenderService.java
-D:\3 курс\Back-end\lab\notification-service\src\main\java\com\clinic\notification\service\NotificationServiceApplication.java
+D:\3 курс\Back-end\lab\notification-service\src\main\java\com\clinic\notification\entity\AppointmentNotification.java
+D:\3 курс\Back-end\lab\notification-service\src\main\java\com\clinic\notification\MailSenderService.java
+D:\3 курс\Back-end\lab\notification-service\src\main\java\com\clinic\notification\messaging\AppointmentEventListener.java
+D:\3 курс\Back-end\lab\notification-service\src\main\java\com\clinic\notification\messaging\NotificationMessagingConfig.java
+D:\3 курс\Back-end\lab\notification-service\src\main\java\com\clinic\notification\NotificationProcessingService.java
+D:\3 курс\Back-end\lab\notification-service\src\main\java\com\clinic\notification\NotificationServiceApplication.java
+D:\3 курс\Back-end\lab\notification-service\src\main\java\com\clinic\notification\repository\AppointmentNotificationRepository.java
+D:\3 курс\Back-end\lab\notification-service\src\main\java\com\clinic\notification\web\NotificationController.java
